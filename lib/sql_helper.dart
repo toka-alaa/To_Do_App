@@ -47,11 +47,11 @@ class SQLHelper
 
   }
 
-  Future<List<Map>> loadTasks({String filter = 'all'}) async {
+  Future<List<Map>> loadTasks({String filter = 'All'}) async {
     Database db = await getDatabase();
-    if (filter == 'completed') {
+    if (filter == 'Completed') {
       return await db.query('tasks', where: 'isCompleted = ?', whereArgs: [1]);
-    } else if (filter == 'incomplete') {
+    } else if (filter == 'inCompleted') {
       return await db.query('tasks', where: 'isCompleted = ?', whereArgs: [0]);
     } else {
       return await db.query('tasks');
