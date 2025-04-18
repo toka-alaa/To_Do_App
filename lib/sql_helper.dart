@@ -78,6 +78,15 @@ class SQLHelper
     return await db.delete('tasks');
   }
 
+
+  Future searchTask(String title) async {
+    Database db = await getDatabase();
+    return await db.query('tasks',
+        where: 'title LIKE ? ',
+        whereArgs: ['%$title%']);
+  }
+
+
   Future<List<Task>> getCompletedTasks() async {
     Database db = await getDatabase();
     final List<Map<String, dynamic>> maps = await db.query(

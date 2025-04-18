@@ -1,8 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_app/sql_helper.dart';
 
-class Search extends StatelessWidget {
+class Search extends StatefulWidget {
   const Search({super.key});
 
+  @override
+  State<Search> createState() => _SearchState();
+}
+
+class _SearchState extends State<Search> {
+ TextEditingController searchController = TextEditingController();
+SQLHelper sqlHelper = SQLHelper();
+ List<Map<String, dynamic>> searchResults = [];
+
+ void search(String keyword) async {
+   final results = await sqlHelper.searchTask(keyword);
+   setState(() {
+     searchResults = results;
+   });
+ }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,6 +40,8 @@ class Search extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextFormField(
+              onChanged: search ,
+              controller: searchController,
               decoration: InputDecoration(
                 labelText: 'Search',
                 labelStyle: TextStyle(
@@ -50,6 +68,32 @@ class Search extends StatelessWidget {
               style: const TextStyle(
                 color: Colors.white,
               ),
+            ),
+          ),
+
+          Expanded(
+            child: ListView.builder(
+                  itemCount: searchResults.length,
+                  itemBuilder: (context, index) {
+                    final task = searchResults[index];
+                    return Card(
+                      margin: const EdgeInsets.all(8.0),
+                      child: ListTile(
+                        title: Text(task['title']),
+                        subtitle: Text(task['description']),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            setState(()async {
+
+                              await sqlHelper.deleteTask(task['id']);
+                              search(searchController.text);
+                            });
+                          },
+                        ),
+                      ),
+                    );
+              },
             ),
           ),
         ],
